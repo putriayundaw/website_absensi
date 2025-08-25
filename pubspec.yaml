@@ -1,0 +1,37 @@
+name: website_absensi
+description: "A new Flutter project."
+
+publish_to: 'none' # Tentukan jika tidak akan dipublikasikan ke pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0" # Rentang versi SDK Dart
+
+dependencies:
+  build_runner: ^2.7.0
+  charts_flutter: ^0.12.0
+  dartz: ^0.10.1
+  fl_chart: ^1.0.0
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  font_awesome_flutter: ^10.10.0
+  freezed: ^3.2.0
+  freezed_annotation: ^3.1.0
+  go_router: ^16.2.0
+  http: ^1.5.0
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+
+  assets:
+   - assets/images/sidebar/logo.png
+
+# Splash screen has been added in the 'splash.yaml' file in the main project directory
