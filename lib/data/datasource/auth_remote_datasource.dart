@@ -40,7 +40,6 @@ class AuthRemoteDatasource {
 
       final response = await http.post(
         Uri.parse('${Variables.baseUrl}/logout'),
-        headers: {'Authorization': 'Bearer ${authData.accessToken}'}
       );
 
       if (response.statusCode == 200) {

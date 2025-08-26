@@ -19,23 +19,27 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     initialLocation: '/login',  // Tentukan halaman awal (login)
     routes: [
-      // Rute-rute untuk halaman utama
+      // Rute untuk halaman login
       GoRoute(
         path: '/login',
         builder: (context, state) =>  LoginPage(),
       ),
+      // Rute untuk halaman dashboard
       GoRoute(
         path: '/dashboard',
         builder: (context, state) => const DashboardPage(),
       ),
+      // Rute untuk halaman register
       GoRoute(
         path: '/register',
         builder: (context, state) => const RegisterPage(),
       ),
+      // Rute untuk halaman produk
       GoRoute(
         path: '/product',
         builder: (context, state) => const ProductPage(),
       ),
+      // Rute untuk absensi
       GoRoute(
         path: '/data-absensi',
         builder: (context, state) => const DataAbsensiPage(),
@@ -48,6 +52,7 @@ class AppRouter {
         path: '/data-pengguna',
         builder: (context, state) => const DataPenggunaPage(),
       ),
+      // Rute untuk QR Code dan scan
       GoRoute(
         path: '/qr-code',
         builder: (context, state) => const QRCodePage(),
@@ -56,11 +61,12 @@ class AppRouter {
         path: '/scan',
         builder: (context, state) => const ScanPage(),
       ),
+      // Rute untuk logout
       GoRoute(
         path: '/logout',
         builder: (context, state) => const LogoutPage(),
       ),
-      // Rute-rute untuk halaman produk
+      // Rute untuk halaman produk lainnya
       GoRoute(
         path: '/all-product',
         builder: (context, state) => const AllProductPage(),
@@ -77,6 +83,7 @@ class AppRouter {
         path: '/pengembalian-barang',
         builder: (context, state) => const PengembalianBarangPage(),
       ),
+      // Rute untuk halaman profil
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfilePage(),

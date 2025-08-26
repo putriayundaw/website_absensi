@@ -3,10 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:website_absensi/core/constans/colors.dart';
 import 'package:website_absensi/core/constans/variables.dart';
 import 'package:website_absensi/core/routes/app_routes.dart';
-
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -21,9 +19,19 @@ class _RegisterPageState extends State<RegisterPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  final schoolController = TextEditingController();
+  final addressController = TextEditingController();
+  final genderController = TextEditingController();
+  final roleController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  // Fungsi untuk register
+  String? selectedGender;
+  String? selectedRole;
+
+  // Daftar pilihan gender dan role
+  final List<String> genderList = ['Laki-laki', 'Perempuan'];
+  final List<String> roleList = ['Admin', 'User'];
+
   Future<void> _register() async {
     if (_formKey.currentState?.validate() ?? false) {
       if (passwordController.text != confirmPasswordController.text) {
@@ -32,40 +40,40 @@ class _RegisterPageState extends State<RegisterPage> {
       }
 
       try {
-        // Menyiapkan data yang akan dikirim
         final response = await http.post(
-          Uri.parse('${Variables.baseUrl}/api/register'), // API URL
+          Uri.parse('${Variables.baseUrl}/ellen_ocn/register'),
           body: json.encode({
+            'role': selectedRole!,
+            'school': schoolController.text,
             'name': nameController.text,
+            'address': addressController.text,
+            'gender': selectedGender!,
+            'phone_number': phoneController.text,
             'email': emailController.text,
             'password': passwordController.text,
-            'phone': phoneController.text,
-            'roles': 'USER', // Define the role (optional)
           }),
           headers: {
-            'Content-Type': 'application/json', // Ensure the request body is JSON
+            'Content-Type': 'application/json',
           },
         );
 
-        // Check Response Status
         if (response.statusCode == 201) {
           final responseData = json.decode(response.body);
-          final accessToken = responseData['access_token']; // Capture the token
 
-          // Optionally: Save user info and access token to SharedPreferences for session management
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('name', nameController.text);
-          prefs.setString('email', emailController.text);
+          prefs.setString('role', selectedRole!);
+          prefs.setString('school', schoolController.text);
+          prefs.setString('address', addressController.text);
+          prefs.setString('gender', selectedGender!);
           prefs.setString('phone', phoneController.text);
-          prefs.setString('access_token', accessToken); // Store access token
+          prefs.setString('email', emailController.text);
 
-          // Show success and navigate to login screen
           _showSuccess('Akun berhasil dibuat!');
-          context.goNamed(AppRoutes.login); // Navigate to the login page
+          context.goNamed(AppRoutes.login);
         } else if (response.statusCode == 400) {
           _showError('Data yang Anda masukkan tidak valid.');
         } else {
-          _showError('Terjadi kesalahan: ${response.body}');
+          _showError(' ${response.body}');
         }
       } catch (e) {
         _showError('Terjadi kesalahan. Silakan coba lagi.');
@@ -73,14 +81,12 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  // Menampilkan pesan error
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
   }
 
-  // Menampilkan pesan sukses
   void _showSuccess(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
@@ -94,15 +100,19 @@ class _RegisterPageState extends State<RegisterPage> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    schoolController.dispose();
+    addressController.dispose();
+    genderController.dispose();
+    roleController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFf0f7ff), // Light blue background
+      backgroundColor: const Color(0xFFf0f7ff),
       body: SafeArea(
-        child: SingleChildScrollView( // Membungkus seluruh tampilan dalam SingleChildScrollView
+        child: SingleChildScrollView(
           child: Center(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -141,7 +151,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                         const SizedBox(height: 30),
-                        // Input Fields
                         TextFormField(
                           controller: nameController,
                           decoration: InputDecoration(
@@ -246,19 +255,113 @@ class _RegisterPageState extends State<RegisterPage> {
                           },
                         ),
                         const SizedBox(height: 20),
+                        TextFormField(
+                          controller: schoolController,
+                          decoration: InputDecoration(
+                            labelText: 'School',
+                            prefixIcon: const Icon(Icons.school),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: addressController,
+                          decoration: InputDecoration(
+                            labelText: 'Address',
+                            prefixIcon: const Icon(Icons.location_on),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        // Gender Dropdown
+                        DropdownButtonFormField<String>(
+                          value: selectedGender,
+                          decoration: InputDecoration(
+                            labelText: 'Gender',
+                            prefixIcon: const Icon(Icons.person_outline),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          items: genderList.map((gender) {
+                            return DropdownMenuItem<String>(
+                              value: gender,
+                              child: Text(gender),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedGender = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a gender';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        // Role Dropdown
+                        DropdownButtonFormField<String>(
+                          value: selectedRole,
+                          decoration: InputDecoration(
+                            labelText: 'Role',
+                            prefixIcon: const Icon(Icons.supervisor_account),
+                            filled: true,
+                            fillColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                          items: roleList.map((role) {
+                            return DropdownMenuItem<String>(
+                              value: role,
+                              child: Text(role),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              selectedRole = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a role';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
                         ElevatedButton(
-                          onPressed: _register,
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              _register();
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            padding: const EdgeInsets.symmetric(vertical: 15),
-                            minimumSize: const Size(double.infinity, 55),
+                            backgroundColor: Colors
+                                .blueAccent, // Sesuaikan dengan warna login
+                            padding: EdgeInsets.symmetric(vertical: 15),
+                            minimumSize: Size(double.infinity, 55),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
                           ),
-                          child: const Text(
+                          child: Text(
                             'Register',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -268,7 +371,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             const Text("Already have an account? "),
                             TextButton(
                               onPressed: () {
-                                context.goNamed(AppRoutes.login); // Navigate to login
+                                context.go('/login');
                               },
                               child: const Text(
                                 'Login',

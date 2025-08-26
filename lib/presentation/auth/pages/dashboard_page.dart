@@ -21,23 +21,24 @@ class DashboardPage extends StatelessWidget {
             children: [
               // Search Bar
               TextField(
-  decoration: InputDecoration(
-    labelText: 'Search...',
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(20), // Menambahkan border radius
-    ),
-    prefixIcon: Icon(Icons.search),
-  ),
-),
-            
+                decoration: InputDecoration(
+                  labelText: 'Search...',
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(20), // Menambahkan border radius
+                  ),
+                  prefixIcon: Icon(Icons.search),
+                ),
+              ),
+
               const SizedBox(height: 10),
-              
+
               const Text(
                 'Dashboard Types',
                 style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
-              
+
               ResponsiveGrid(),
               const SizedBox(height: 20),
 
@@ -66,7 +67,9 @@ class DashboardPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 10),
           Container(
             height: 250,

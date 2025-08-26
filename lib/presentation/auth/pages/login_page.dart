@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';  // Mengimpor go_router untuk navigasi berbasis URL
+import 'package:go_router/go_router.dart';  
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:website_absensi/core/constans/variables.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -12,17 +16,56 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _rememberMe = false;
 
+  Future<void> _login() async {
+    if (_formKey.currentState?.validate() ?? false) {
+      try {
+        final response = await http.post(
+         Uri.parse('${Variables.baseUrl}/ellen_ocn/register'),
+          body: json.encode({
+            'email': emailController.text,
+            'password': passwordController.text,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final responseData = json.decode(response.body);
+          
+          // Simpan token atau data yang diperlukan di SharedPreferences
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString('token', responseData['token']);  // Misalnya, token yang diberikan server
+          prefs.setString('email', emailController.text);  // Simpan email atau data lain
+
+          // Arahkan ke dashboard
+          context.go('/dashboard');
+        } else {
+          _showError('Login gagal. Periksa email dan password Anda.');
+        }
+      } catch (e) {
+        _showError('Terjadi kesalahan saat login.');
+      }
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,  // Latar belakang putih
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(  // Membungkus body dengan SingleChildScrollView
+        child: SingleChildScrollView(
           child: Center(
             child: Padding(
               padding: EdgeInsets.all(20.0),
               child: Card(
-                elevation: 15,  // Menambahkan bayangan pada Card
+                elevation: 15,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -56,6 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         SizedBox(height: 40),
+                        // Email Input Field
                         TextFormField(
                           controller: emailController,
                           decoration: InputDecoration(
@@ -72,10 +116,15 @@ class _LoginPageState extends State<LoginPage> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter an email';
                             }
+                            if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                                .hasMatch(value)) {
+                              return 'Please enter a valid email';
+                            }
                             return null;
                           },
                         ),
                         SizedBox(height: 20),
+                        // Password Input Field
                         TextFormField(
                           controller: passwordController,
                           obscureText: true,
@@ -92,13 +141,14 @@ class _LoginPageState extends State<LoginPage> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter a password';
                             }
-                            if (value.length < 6) {
-                              return 'Password must be at least 6 characters';
+                            if (value.length < 8) {
+                              return 'Password must be at least 8 characters';
                             }
                             return null;
                           },
                         ),
                         SizedBox(height: 20),
+                        // Remember Me Checkbox
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -117,12 +167,9 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                         SizedBox(height: 30),
+                        // Login Button
                         ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState?.validate() ?? false) {
-                              context.go('/dashboard');  // Pindah ke halaman dashboard
-                            }
-                          },
+                          onPressed: _login,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueAccent,
                             padding: EdgeInsets.symmetric(vertical: 15),
@@ -137,6 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         SizedBox(height: 20),
+                        // Link to Register Page
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
