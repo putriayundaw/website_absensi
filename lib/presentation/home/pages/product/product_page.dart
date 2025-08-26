@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:website_absensi/presentation/widgets/sidebar.dart';
 
 class ProductPage extends StatelessWidget {
   const ProductPage({Key? key}) : super(key: key);
@@ -9,9 +10,13 @@ class ProductPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Product Page'),
       ),
-      body: Center(
+      drawer: Sidebar(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+      child: Center(
         child: Text('Halaman Produk'),
       ),
+      )
     );
   }
 }

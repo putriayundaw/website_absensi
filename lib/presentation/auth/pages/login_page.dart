@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';  
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:website_absensi/core/constans/variables.dart';
+import 'package:go_router/go_router.dart';  // Mengimpor go_router untuk navigasi berbasis URL
 
 class LoginPage extends StatefulWidget {
   @override
@@ -16,56 +12,17 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   bool _rememberMe = false;
 
-  Future<void> _login() async {
-    if (_formKey.currentState?.validate() ?? false) {
-      try {
-        final response = await http.post(
-         Uri.parse('${Variables.baseUrl}/ellen_ocn/register'),
-          body: json.encode({
-            'email': emailController.text,
-            'password': passwordController.text,
-          }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        );
-
-        if (response.statusCode == 200) {
-          final responseData = json.decode(response.body);
-          
-          // Simpan token atau data yang diperlukan di SharedPreferences
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString('token', responseData['token']);  // Misalnya, token yang diberikan server
-          prefs.setString('email', emailController.text);  // Simpan email atau data lain
-
-          // Arahkan ke dashboard
-          context.go('/dashboard');
-        } else {
-          _showError('Login gagal. Periksa email dan password Anda.');
-        }
-      } catch (e) {
-        _showError('Terjadi kesalahan saat login.');
-      }
-    }
-  }
-
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white,  // Latar belakang putih
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: SingleChildScrollView(  // Membungkus body dengan SingleChildScrollView
           child: Center(
             child: Padding(
               padding: EdgeInsets.all(20.0),
               child: Card(
-                elevation: 15,
+                elevation: 15,  // Menambahkan bayangan pada Card
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -116,6 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                             if (value == null || value.isEmpty) {
                               return 'Please enter an email';
                             }
+                            // Validasi format email
                             if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
                                 .hasMatch(value)) {
                               return 'Please enter a valid email';
@@ -142,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                               return 'Please enter a password';
                             }
                             if (value.length < 8) {
-                              return 'Password must be at least 8 characters';
+                              return 'Password must be at least 6 characters';
                             }
                             return null;
                           },
@@ -169,7 +127,12 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(height: 30),
                         // Login Button
                         ElevatedButton(
-                          onPressed: _login,
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              // Arahkan ke dashboard setelah login berhasil
+                              context.go('/dashboard');  // Pindah ke halaman dashboard
+                            }
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.blueAccent,
                             padding: EdgeInsets.symmetric(vertical: 15),

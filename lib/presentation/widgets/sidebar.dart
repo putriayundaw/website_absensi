@@ -58,7 +58,9 @@ class _SidebarState extends State<Sidebar> {
               _buildSidebarItem(Icons.camera, 'Scan Pinjam', context, '/scan'),
               _buildSidebarItem(Icons.camera_alt, 'Scan Pengembalian', context, '/scan'),
               _buildSidebarItem(Icons.remove_red_eye, 'Scan Barang Keluar', context, '/scan'),
-              _buildSidebarItem(Icons.logout, 'Logout', context, '/logout'),
+               _buildSidebarItem(Icons.person, 'Profile', context, '/profile'),
+              _buildSidebarItem(Icons.logout, 'Logout', context, '/login'),
+            
             ]),
           ],
         ),

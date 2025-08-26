@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:website_absensi/core/constans/variables.dart';
-import 'package:website_absensi/core/routes/app_routes.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -69,7 +68,7 @@ class _RegisterPageState extends State<RegisterPage> {
           prefs.setString('email', emailController.text);
 
           _showSuccess('Akun berhasil dibuat!');
-          context.goNamed(AppRoutes.login);
+          context.go('/login');
         } else if (response.statusCode == 400) {
           _showError('Data yang Anda masukkan tidak valid.');
         } else {

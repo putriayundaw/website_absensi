@@ -86,7 +86,7 @@ class AppRouter {
       // Rute untuk halaman profil
       GoRoute(
         path: '/profile',
-        builder: (context, state) => const ProfilePage(),
+        builder: (context, state) =>  ProfilePage(),
       ),
     ],
   );
